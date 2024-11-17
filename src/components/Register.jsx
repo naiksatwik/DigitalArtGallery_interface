@@ -54,9 +54,9 @@ export const Register = () => {
       if (response.status === 201) {
         alert("Registration successful!");
 
-        localStorage.setItem("username", username);
-        localStorage.setItem("email", email);
-        localStorage.setItem("userType", userType);
+        localStorage.setItem("username", formData.username);
+        localStorage.setItem("email", formData.email);
+        localStorage.setItem("userType", formData.userType);
         // Clear form data after successful registration
         setFormData({
           username: "",
@@ -101,7 +101,7 @@ export const Register = () => {
             <span className="text-purple-700">G</span>
           </h1>
 
-          <div className="w-full md:w-3/4 h-full md:h-3/4 flex flex-col justify-center items-center shadow-2xl shadow-indigo-500/50 rounded-xl p-4">
+          <div className="w-full md:w-3/4 h-full md:h-full flex flex-col justify-center items-center shadow-2xl shadow-indigo-500/50 rounded-xl p-4">
             <p className="text-4xl md:text-6xl mb-8">Register</p>
 
             <div className="max-w-sm w-full mb-4">

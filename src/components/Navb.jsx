@@ -3,6 +3,8 @@ import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 
 function Navb() {
+
+  const userType = localStorage.getItem("userType");
   return (
     <Navbar expand="lg" className="bg-white">
       <Container className="mx-auto" style={{ maxWidth: "1500px" }}>
@@ -21,11 +23,15 @@ function Navb() {
             <Nav.Link href="/digA/profile">
               <b>Profile</b>
             </Nav.Link>
+            {
+              userType=="artist"  ? <Nav.Link href="/digA/Admin/ArtworkAdd">
+              <b>Add Artwork</b>
+            </Nav.Link> :  <Nav.Link href="/digA/profile">
+              <b>Profile</b>
+            </Nav.Link>
+            }
             <Nav.Link href="#link">
               <b>About</b>
-            </Nav.Link>
-            <Nav.Link href="#link">
-              <b>Orders</b>
             </Nav.Link>
           </Nav>
         </Navbar.Collapse>
