@@ -2,14 +2,17 @@ import React, { useEffect, useState } from "react";
 import Navb from "./Navb";
 import homeBanner from '../assets/homeBanner.jpg';
 import Foodcard from "./Foodcard";
+import AdminNav from "./AdminNav";
 
 export default function Home() {
   const [artworks, setArtworks] = useState([]); // State to store artworks
   const [loading, setLoading] = useState(true); // State to track loading
   const [error, setError] = useState(null); // State to handle errors
+  const userType = localStorage.getItem("userType");
 
   useEffect(() => {
     // Fetch artworks from the API
+
     const fetchArtworks = async () => {
       try {
         const response = await fetch("http://localhost:3000/artworks");
@@ -31,8 +34,9 @@ export default function Home() {
 
   return (
     <>
-      <Navb />
-
+      {
+        (userType == "artist")? <AdminNav/> : <Navb/>
+      }
       <div className="max-w-[1240px] mx-auto px-4 -z-50">
         <div className="max-h-[500px] relative px-4">
           <div>

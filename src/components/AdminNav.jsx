@@ -5,7 +5,7 @@ import Navbar from "react-bootstrap/Navbar";
 import Button from "react-bootstrap/Button";
 import { useNavigate } from "react-router-dom";
 
-function Navb() {
+function AdminNav() {
   const navigate = useNavigate();
   const userType = localStorage.getItem("userType");
 
@@ -34,17 +34,13 @@ function Navb() {
             <Nav.Link href="/digA/profile" className="text-white hover:underline mx-2">
               <b>Profile</b>
             </Nav.Link>
-            {userType === "artist" ? (
+    
               <Nav.Link href="/digA/Admin/ArtworkAdd" className="text-white hover:underline mx-2">
                 <b>Add Artwork</b>
               </Nav.Link>
-            ) : (
-              <Nav.Link href="/digA/profile" className="text-white hover:underline mx-2">
-                <b>Profile</b>
-              </Nav.Link>
-            )}
-            <Nav.Link href="#link" className="text-white hover:underline mx-2">
-              <b>About</b>
+            
+            <Nav.Link href="/digA/Admin/myArtwork" className="text-white hover:underline mx-2">
+              <b>My Artworks</b>
             </Nav.Link>
             {/* Logout Button */}
             <Button
@@ -61,4 +57,4 @@ function Navb() {
   );
 }
 
-export default Navb;
+export default AdminNav;

@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import Navb from './Navb';
+import AdminNav from './AdminNav';
 
 const schema = z.object({
     artwork_name: z.string().nonempty('Artwork Name is required'),
@@ -65,7 +66,7 @@ export const AddArtwork = () => {
 
   return (
     <>
-      <Navb />
+      <AdminNav/>
       <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <form onSubmit={handleSubmit(onSubmit)}
           className="bg-white p-6 shadow-lg rounded-lg max-w-[500px] w-full"

@@ -7,6 +7,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import { Admin } from "./components/Admin";
 import IsAuth from "./components/IsAuth";
 import { AddArtwork } from "./components/AddArtwork";
+import { MyArtwork } from "./components/MyArtwork";
 
 // App.jsx
 function App() {
@@ -21,6 +22,8 @@ function App() {
           <Route path="/digA/profile" element={<Profile/>}/>
           <Route path="/digA/Admin" element={<Admin/>}/>
           <Route path="/digA/Admin/ArtworkAdd" element={<AddArtwork/>}/>
+          <Route path="/digA/Admin/myArtwork" element={<MyArtwork/>}/>
+
           <Route
               path="*"
               element={

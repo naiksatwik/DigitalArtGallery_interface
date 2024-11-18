@@ -1,12 +1,12 @@
 import React from 'react'
-import Navb from './Navb'
 import { PaymentInfo } from './PaymentInfo'
+import AdminNav from './AdminNav'
 
 export const Admin = () => {
   return (
    <>
-   <Navb/>
-   <PaymentInfo/>
+    <AdminNav/>
+    <h1 className='m-2 text-2xl font-semibold'>My artworks</h1>
    </>
   )
 }
