@@ -1,167 +1,160 @@
-import React, { useState } from 'react';
-import Navb from './Navb';
+import React, { useState, useEffect } from "react";
+import Navb from "./Navb";
 
-export const Profile = () => {
-  const [image, setImage] = useState(null);
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [userType, setUserType] = useState('User');
-  const [emailError, setEmailError] = useState('');
-  const [phoneError, setPhoneError] = useState('');
+const Profile = () => {
+  const userEmail = localStorage.getItem("email"); // Replace with dynamic email from context/auth
+  const [profile, setProfile] = useState({
+    username: "",
+    email: userEmail,
+    phone_number: "",
+    user_image: "",
+  });
+  const [file, setFile] = useState(null);
 
-  // Handle image upload
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:3000/profile?email=${encodeURIComponent(userEmail)}`
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch profile");
+        }
+        const data = await response.json();
+        const { user_image, ...rest } = data;
+
+        // Convert binary image data to a Base64 string for display
+        if (user_image) {
+          rest.user_image = `data:image/jpeg;base64,${user_image}`;
+        }
+        setProfile(rest);
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+      }
+    };
+
+    fetchProfile();
+  }, [userEmail]);
+
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
+    setFile(e.target.files[0]);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+
+    formData.append("email", userEmail);
+    formData.append("username", profile.username);
+    formData.append("phone_number", profile.phone_number);
     if (file) {
-      const reader = new FileReader();
-      reader.onload = () => setImage(reader.result);
-      reader.readAsDataURL(file);
+      formData.append("user_image", file);
     }
-  };
 
-  // Validate email format
-  const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
+    try {
+      const response = await fetch("http://localhost:3000/profile", {
+        method: "PUT",
+        body: formData,
+      });
 
-  // Validate phone number format
-  const validatePhoneNumber = (phone) => {
-    const phoneRegex = /^\d{10}$/;
-    return phoneRegex.test(phone);
-  };
+      if (!response.ok) {
+        throw new Error("Failed to update profile");
+      }
 
-  // Handle form submission
-  const handleSave = () => {
-    // Check email
-    if (!validateEmail(email)) {
-      setEmailError('Please enter a valid email address.');
-      return;
+      alert("Profile updated successfully!");
+    } catch (error) {
+      console.error("Error updating profile:", error);
     }
-    setEmailError('');
-
-    // Check phone number
-    if (!validatePhoneNumber(phone)) {
-      setPhoneError('Please enter a valid 10-digit phone number.');
-      return;
-    }
-    setPhoneError('');
-
-    const profileData = { name, email, phone, userType, image };
-    console.log("Profile Saved:", profileData);
-    alert("Profile saved successfully!");
   };
 
   return (
     <>
       <Navb />
-      <section className="max-w-[1500px] mx-auto  min-h-screen flex flex-col items-center  justify-center p-4 sm:p-6 lg:p-8">
-        <div className="bg-white p-4 sm:p-6 md:p-8 rounded-lg shadow-lg w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl">
-          <h1 className="text-xl sm:text-2xl font-bold text-center mb-4">Profile Page</h1>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+        <div className="bg-white shadow-lg rounded-lg p-6 w-96">
+          <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+            Your Profile
+          </h2>
 
-          {/* Profile Image Upload */}
           <div className="flex justify-center mb-4">
-            <label htmlFor="avatar" className="relative cursor-pointer">
-              {image ? (
-                <img
-                  src={image}
-                  alt="Avatar"
-                  className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-full border-2 border-gray-300 object-cover"
-                />
-              ) : (
-                <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-full bg-gray-200 flex items-center justify-center">
-                  <span className="text-gray-500 text-sm sm:text-base">Upload Image</span>
-                </div>
-              )}
-              <input
-                type="file"
-                id="avatar"
-                name="avatar"
-                accept="image/png, image/jpeg"
-                onChange={handleImageChange}
-                className="hidden"
+            <div className="relative">
+              <img
+                src={profile.user_image || "https://via.placeholder.com/150"}
+                alt="Profile"
+                className="w-32 h-32 rounded-full object-cover border-4 border-blue-600 shadow-lg"
               />
-            </label>
+              <label
+                htmlFor="file-input"
+                className="absolute bottom-0 right-0 bg-blue-600 text-white rounded-full p-2 cursor-pointer hover:bg-blue-700"
+              >
+                <i className="fas fa-camera"></i>
+              </label>
+            </div>
           </div>
 
-          {/* Profile Information Form */}
-          <form className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-gray-700">Name</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Username:
+              </label>
               <input
                 type="text"
-                className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Enter your name"
+                name="username"
+                value={profile.username}
+                onChange={(e) =>
+                  setProfile({ ...profile, username: e.target.value })
+                }
+                className="mt-1 block w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               />
             </div>
-
             <div>
-              <label className="block text-gray-700">Email</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Email:
+              </label>
               <input
                 type="email"
-                className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
+                name="email"
+                value={profile.email}
+                disabled
+                className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm sm:text-sm cursor-not-allowed"
               />
-              {emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>}
             </div>
-
             <div>
-              <label className="block text-gray-700">Phone Number</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Phone Number:
+              </label>
               <input
-                type="tel"
-                className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="Enter your phone number"
+                type="text"
+                name="phone_number"
+                value={profile.phone_number}
+                onChange={(e) =>
+                  setProfile({ ...profile, phone_number: e.target.value })
+                }
+                className="mt-1 block w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               />
-              {phoneError && <p className="text-red-500 text-sm mt-1">{phoneError}</p>}
             </div>
-
             <div>
-              <label className="block text-gray-700">Type</label>
-              <div className="flex flex-col sm:flex-row items-center sm:space-x-4">
-                <label className="flex items-center space-x-2">
-                  <input
-                    type="radio"
-                    name="type"
-                    value="Artist"
-                    checked={userType === 'Artist'}
-                    onChange={(e) => setUserType(e.target.value)}
-                    className="focus:ring-2 focus:ring-blue-500"
-                  />
-                  <span>Artist</span>
-                </label>
-                <label className="flex items-center space-x-2 mt-2 sm:mt-0">
-                  <input
-                    type="radio"
-                    name="type"
-                    value="User"
-                    checked={userType === 'User'}
-                    onChange={(e) => setUserType(e.target.value)}
-                    className="focus:ring-2 focus:ring-blue-500"
-                  />
-                  <span>User</span>
-                </label>
-              </div>
+              <label className="block text-sm font-medium text-gray-700">
+                Change Profile Picture:
+              </label>
+              <input
+                type="file"
+                id="file-input"
+                onChange={handleImageChange}
+                className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              />
             </div>
-
-            {/* Save Button */}
             <button
-              type="button"
-              onClick={handleSave}
-              className="w-full px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-200"
+              type="submit"
+              className="w-full py-2 px-4 bg-blue-600 text-white font-medium rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             >
-              Save
+              Update Profile
             </button>
           </form>
         </div>
-      </section>
+      </div>
     </>
   );
 };
 
+export default Profile;
