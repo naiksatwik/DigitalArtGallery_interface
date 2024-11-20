@@ -12,7 +12,7 @@ const schema = z.object({
       .refine((files) => files && files.length > 0 && files[0] instanceof File, {
         message: 'Artwork Image is required',
       }),
-    price: z.string().regex(/^\d+(\.\d{1,2})?$/, 'Enter a valid price'),
+    // price: z.string().regex(/^\d+(\.\d{1,2})?$/, 'Enter a valid price'),
     about_artwork: z.string().nonempty('About Artwork is required'),
   });
   
@@ -39,7 +39,7 @@ export const AddArtwork = () => {
         const formData = new FormData();
         formData.append('artwork_name', data.artwork_name);
         formData.append('artwork_image', data.artwork_image[0]);
-        formData.append('price', data.price);
+        formData.append('price', 20);
         formData.append('about_artwork', data.about_artwork);
         formData.append('artist_email', email);
       
@@ -108,7 +108,7 @@ export const AddArtwork = () => {
             )}
           </div>
 
-          {/* Price */}
+          {/* Price
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Price
@@ -124,7 +124,7 @@ export const AddArtwork = () => {
             {errors.price && (
               <p className="text-red-500 text-sm">{errors.price.message}</p>
             )}
-          </div>
+          </div> */}
 
           {/* About Artwork */}
           <div className="mb-4">

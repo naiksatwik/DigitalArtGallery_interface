@@ -8,7 +8,7 @@ const IsAuth = () => {
   return userName == null ? (
     <Navigate to="/login" replace />
   ) : userType == "artist" ? (
-    <Navigate to="/digA/Admin" replace />
+    <Navigate to="/digA/home" replace />
   ) : (
     <Navigate to="/digA/home" replace />
   );
